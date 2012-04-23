@@ -97,8 +97,16 @@ class ExtDirectStore(object):
             queryset = qs
         else:
             queryset = self.model.objects
-            
-        queryset = queryset.filter(**kw)
+        #konvert 'filter' property to django query dict
+        filter_dict = {}
+        if kw.has_key('filter'):
+            filters = kw.pop('filter')
+            for filter in filters:
+                prop = filter['property']
+                value = filter['value']
+                filter_dict[prop] = value
+
+        queryset = queryset.filter(**filter_dict)
         
         #print 'FIELDS', fields
         # if fields:

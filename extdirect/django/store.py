@@ -7,7 +7,7 @@ class ExtDirectStore(object):
     Implement the server-side needed to load an Ext.data.DirectStore
     """
     
-    def __init__(self, model, extras=[], root='records', total='total', \
+    def __init__(self, model, extras=[], root='data', total='total', \
                  success='success', message='message', start='start', limit='limit', \
                  sort='sort', dir='dir', metadata=False, colModel=False, id_property='id', \
                  mappings={}, sort_info={}, custom_meta={}, fields = [], exclude_fields=[], \
@@ -69,16 +69,27 @@ class ExtDirectStore(object):
         if kw.has_key(self.start) and kw.has_key(self.limit):
             start = kw.pop(self.start)
             limit = kw.pop(self.limit)
+            if not kw.get('page',None) is None:
+                page = kw.pop('page')
             paginate = True
-            
-        if kw.has_key(self.sort) and kw.has_key(self.dir):
-            sort = kw.pop(self.sort)
-            dir = kw.pop(self.dir)
-            order = True
-            
-            if dir == 'DESC':
-                sort = '-' + sort
-                
+            #print 'Paginate',paginate,start,limit,page
+
+        if kw.has_key('group'):
+            kw.pop('group')
+        #if kw.has_key(self.sort) and kw.has_key(self.dir):
+        if kw.has_key(self.sort):
+			sort = kw.pop(self.sort)
+			order = True
+			sort = []
+			for sorter in sort:
+				#print sorter
+				field = sorter['property']
+				direction = sorter['direction']
+				prefix = ''
+				if direction == 'DESC':
+					prefix = '-'
+				sort += ['%s%s' % (prefix,field)]
+			#print sort    
         if not qs is None:
             # Don't use queryset = qs or self.model.objects
             # because qs could be empty list (evaluate to False)
@@ -95,7 +106,7 @@ class ExtDirectStore(object):
             
       #  print 'QS', queryset
         if order:
-            queryset = queryset.order_by(sort)
+            queryset = queryset.order_by(*sort)
                 
         
         if not paginate or (limit==0):

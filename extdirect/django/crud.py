@@ -105,7 +105,7 @@ class BaseExtDirectCRUD(object):
         if self.isForm:
             return dict(request.extdirect_post_data.items())
         else:
-            return request.extdirect_post_data[0][self.store.root]
+            return request.extdirect_post_data[0]
 
     def extract_read_data(self, request):
         #It must return a dict object ready to be passed
@@ -123,11 +123,19 @@ class BaseExtDirectCRUD(object):
         if self.isForm:
             return dict(request.extdirect_post_data.items())
         else:
-            return request.extdirect_post_data[0][self.store.root]
+            return request.extdirect_post_data[0]
 
     def extract_destroy_data(self, request):
         #It must return the id or list of id's to be deleted.
-        return request.extdirect_post_data[0][self.store.root]
+        d = request.extdirecT_post_data[0]
+        result = []
+        if isinstance(d,list):
+			print 'd[0]:',d[0]['id']
+			for x in d:
+				result += [x['id']]
+		else:
+			result = [d['id']]
+        return result
 
     def _single_create(self, request, data):
         #id='ext-record-#'

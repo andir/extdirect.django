@@ -130,11 +130,11 @@ class BaseExtDirectCRUD(object):
         d = request.extdirecT_post_data[0]
         result = []
         if isinstance(d,list):
-			print 'd[0]:',d[0]['id']
-			for x in d:
-				result += [x['id']]
-		else:
-			result = [d['id']]
+            #print 'd[0]:',d[0]['id']
+            for x in d:
+                result += [x['id']]
+        else:
+            result = [d['id']]
         return result
 
     def _single_create(self, request, data):
